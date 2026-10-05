@@ -1,0 +1,60 @@
+{
+  "name": "swim",
+  "graph": {
+    "nodes": [
+      {"name": "split", "kind": "divider", "op": "spread"},
+      {"name": "a1", "kind": "worker", "op": "add", "params": {"v": 1}},
+      {"name": "mark", "kind": "worker", "op": "stamp"},
+      {"name": "b1", "kind": "worker", "op": "add", "params": {"v": 10}},
+      {"name": "b2", "kind": "worker", "op": "add", "params": {"v": 20}},
+      {"name": "c1", "kind": "worker", "op": "add", "params": {"v": 100}},
+      {"name": "c2", "kind": "worker", "op": "add", "params": {"v": 200}},
+      {"name": "c3", "kind": "worker", "op": "add", "params": {"v": 300}},
+      {"name": "join", "kind": "merger", "op": "sum"},
+      {"name": "gate", "kind": "worker", "op": "require", "params": {"min": 0}},
+      {"name": "pick", "kind": "judger", "op": "pick", "params": {"limits": [1000]}},
+      {"name": "hi", "kind": "worker", "op": "add", "params": {"v": 1000}},
+      {"name": "lo", "kind": "worker", "op": "add", "params": {"v": 7}}
+    ],
+    "edges": [
+      ["head000", "split"],
+      ["split", "a1"],
+      ["split", "b1"],
+      ["split", "c1"],
+      ["a1", "mark"],
+      ["mark", "join"],
+      ["b1", "b2"],
+      ["b2", "join"],
+      ["c1", "c2"],
+      ["c2", "c3"],
+      ["c3", "join"],
+      ["join", "gate"],
+      ["gate", "pick"],
+      ["pick", "hi"],
+      ["pick", "lo"],
+      ["hi", "tail111"],
+      ["lo", "tail111"]
+    ]
+  },
+  "runs": [
+    {"id": "main", "input": {"n": 5, "label": "k"}, "ctx": {"mode": "none"}},
+    {"id": "fault", "input": {"n": -700, "label": "k"}, "ctx": {"mode": "none"}},
+    {"id": "cancel", "input": {"n": 5, "label": "k"}, "ctx": {"mode": "cancel", "after_events": 17}},
+    {"id": "timeout", "input": {"n": 5, "label": "k"}, "ctx": {"mode": "timeout", "after_events": 4}},
+    {"id": "badindex", "input": {"n": 5, "label": "k"}, "ctx": {"mode": "none"},
+     "graph": {
+       "nodes": [
+         {"name": "j1", "kind": "judger", "op": "pick", "params": {"raw": [-1]}},
+         {"name": "w0", "kind": "worker", "op": "add", "params": {"v": 1}},
+         {"name": "w1", "kind": "worker", "op": "add", "params": {"v": 2}}
+       ],
+       "edges": [
+         ["head000", "j1"],
+         ["j1", "w0"],
+         ["j1", "w1"],
+         ["w0", "tail111"],
+         ["w1", "tail111"]
+       ]
+     }}
+  ]
+}
